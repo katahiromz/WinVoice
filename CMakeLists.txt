@@ -29,7 +29,7 @@ endif()
 #set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 # enable Win32 resource
-#enable_language(RC)
+enable_language(RC)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # using Clang
@@ -58,7 +58,7 @@ endif()
 ##############################################################################
 
 # executable
-add_executable(WinVoice WIN32 WinVoiceTest.cpp)
+add_executable(WinVoice WIN32 WinVoiceTest.cpp WinVoiceTest_res.rc)
 
 # link
 target_link_libraries(WinVoice ole32)

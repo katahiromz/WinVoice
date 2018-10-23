@@ -1,9 +1,10 @@
 // WinVoice.h --- SAPI wrapper module
-// See ReadMe.txt and License.txt.
+// Copyright (C) 2018 Katayama Hirofumi MZ <katayama.hirofumi.mz@gmail.com>
+// This file is public domain software.
 ////////////////////////////////////////////////////////////////////////////
 
 #ifndef WIN_VOICE_HPP_
-#define WIN_VOICE_HPP_
+#define WIN_VOICE_HPP_      2   // Version 2
 
 #undef INITGUID
 #define INITGUID
@@ -22,8 +23,7 @@ public:
     {
         HRESULT hr = ::CoCreateInstance(CLSID_SpVoice, NULL, CLSCTX_INPROC_SERVER,
                                         IID_ISpVoice, (void **)&m_pSpVoice);
-        m_available = SUCCEEDED(hr);
-        if (m_available)
+        if (SUCCEEDED(hr))
         {
             hr = m_pSpVoice->SetOutput(NULL, TRUE);
             hr = m_pSpVoice->SetVolume(100);
@@ -33,10 +33,12 @@ public:
     }
     void Copy(const WinVoice& voice)
     {
-        m_available = voice.m_available;
         m_pSpVoice = voice.m_pSpVoice;
         m_mute = voice.m_mute;
-        m_pSpVoice->AddRef();
+        if (m_pSpVoice)
+        {
+            m_pSpVoice->AddRef();
+        }
     }
     WinVoice(const WinVoice& voice)
     {
@@ -49,7 +51,10 @@ public:
     }
     virtual ~WinVoice()
     {
-        m_pSpVoice->Release();
+        if (m_pSpVoice)
+        {
+            m_pSpVoice->Release();
+        }
     }
     ISpVoice *SpVoice()
     {
@@ -78,7 +83,13 @@ public:
                               &wide[0], len);
         return Speak(wide, async);
     }
-    bool IsAvailable() const { return this && m_available; }
+    HRESULT Speak(UINT id, bool async = true)
+    {
+        WCHAR szText[256];
+        ::LoadStringW(GetModuleHandle(NULL), id, szText, ARRAYSIZE(szText));
+        return Speak(szText, async);
+    }
+    bool IsAvailable() const { return this && !!m_pSpVoice; }
     HRESULT GetVolume(USHORT *volume) { return m_pSpVoice->GetVolume(volume); }
     HRESULT SetVolume(USHORT volume) { return m_pSpVoice->SetVolume(volume); }
     HRESULT Pause() { return m_pSpVoice->Pause(); }
@@ -97,7 +108,6 @@ public:
     bool IsMute() const { return m_mute; }
 
 protected:
-    bool m_available;
     ISpVoice *m_pSpVoice;
     bool m_mute;
 }; // class WinVoice

@@ -1,8 +1,10 @@
 // WinVoiceTest.cpp --- WinVoice test
-// See ReadMe.txt and License.txt.
+// Copyright (C) 2018 Katayama Hirofumi MZ <katayama.hirofumi.mz@gmail.com>
+// This file is public domain software.
 ////////////////////////////////////////////////////////////////////////////
 
 #include "WinVoice.hpp"
+#include "resource.h"
 
 int main(void)
 {
@@ -12,7 +14,7 @@ int main(void)
         voice.SetVolume(100);
         voice.Speak("How are you?", false);
         voice.Speak(L"I'm sick.", false);
-        voice.Speak(L"\u3053\u3093\u306B\u3061\u308F\x3002", false);    // Japanese
+        voice.Speak(IDS_KONNICHIWA, false);    // Japanese resource
     }
     CoUninitialize();
     return 0;
